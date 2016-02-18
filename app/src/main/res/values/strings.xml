@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SquashPal</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_sign_up">SignUpActivity</string>
+    <string name="title_activity_match_create">MatchCreateActivity</string>
+    <string name="title_activity_match_recieve">MatchRecieveActivity</string>
+    <string name="title_activity_selected_match">SelectedMatchActivity</string>
+</resources>

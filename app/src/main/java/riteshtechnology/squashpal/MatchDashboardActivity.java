@@ -79,8 +79,8 @@ public class MatchDashboardActivity extends AppCompatActivity{
                             Toast.makeText(MatchDashboardActivity.this, results.get(0).get("ToPlayer").toString(), Toast.LENGTH_SHORT).show();
                             Toast.makeText(MatchDashboardActivity.this, results.get(0).getCreatedAt().toString(), Toast.LENGTH_SHORT).show();
                             for (ParseObject match : results) {
-                                toPlayer.add(match.get("ToPlayer").toString());
-                                fromPlayer.add(match.get("FromPlayer").toString());
+                                toPlayer.add(match.get("ToPlayerToDisp").toString());
+                                fromPlayer.add(match.get("FromPlayerToDisp").toString());
                                 matchStatus.add(match.get("Status").toString());
                             }
 

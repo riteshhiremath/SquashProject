@@ -32,6 +32,10 @@ public class MatchCreateActivity extends AppCompatActivity {
     EditText palName,matchLocation,matchTime;
     Button searchPlayer, sendInvite;
     List<ParseUser> allUsers = new ArrayList<>();
+    String ToUserName; //For sending push notification
+    String ToDisplayName;
+    String FromDisplayName;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,8 @@ public class MatchCreateActivity extends AppCompatActivity {
         matchLocation = (EditText)findViewById(R.id.ETmatchLoc);
         matchTime = (EditText)findViewById(R.id.ETmatchTime);
         sendInvite = (Button)findViewById(R.id.btn_sendInvite);
+
+
 
 
         Log.d("Testing name",palName.toString());
@@ -63,16 +69,32 @@ public class MatchCreateActivity extends AppCompatActivity {
 
                 ParseObject Match = new ParseObject("Match");
                 ParseUser current = ParseUser.getCurrentUser();
-                Toast.makeText(MatchCreateActivity.this, current.getUsername(), Toast.LENGTH_SHORT).show();
+                System.out.println(current.getUsername());
+
+
+                getNameFromCurrentUserName(current);
+                //Toast.makeText(MatchCreateActivity.this, current.getUsername(), Toast.LENGTH_SHORT).show();
+
+                System.out.println("Ending Parse Query");
+                System.out.println("Check this" + FromDisplayName);
+                //System.out.println(FromDisplayName);
 
                 //Save the details in the Match table
                 Match.put("FromPlayer", current.getUsername());
-                Match.put("ToPlayer", palName.getText().toString());
-                Match.put("Location",matchLocation.getText().toString() );
+                Match.put("ToPlayer", ToUserName);
+                Match.put("Location", matchLocation.getText().toString());
                 Match.put("Time", matchTime.getText().toString());
                 Match.put("Status", "pending");
+
+                //
+                Match.put("FromPlayerToDisp", FromDisplayName);   //So that names are available in the Match table
+                Match.put("ToPlayerToDisp", ToDisplayName);
                 Match.saveInBackground();
                 Toast.makeText(MatchCreateActivity.this, "Clicking End", Toast.LENGTH_SHORT).show();
+
+
+
+
 
                 /*ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                 installation.put("username", ParseUser.getCurrentUser());
@@ -87,8 +109,8 @@ public class MatchCreateActivity extends AppCompatActivity {
 
                 ParsePush parsePush = new ParsePush();
                 ParseQuery pQuery = ParseInstallation.getQuery(); // <-- Installation query
-                pQuery.whereEqualTo("username", "r@gmail.com");
-                parsePush.sendMessageInBackground("Only for special people", pQuery);
+                pQuery.whereEqualTo("username", ToUserName);
+                parsePush.sendMessageInBackground("Squash Invite", pQuery);
 
 
 
@@ -134,17 +156,37 @@ public class MatchCreateActivity extends AppCompatActivity {
         });
     }
 
+    private void getNameFromCurrentUserName(ParseUser current) {
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("Userdetails");
+        query.whereEqualTo("username", current.getUsername());
+        try {
+            List<ParseObject> entries = query.find();
+            if (entries.size() > 0) {
+                String name = entries.get(0).get("name").toString();
+                String un = entries.get(0).get("username").toString();
+                FromDisplayName = name;
+                System.out.println(name);
+                System.out.println(un);
+                System.out.println(FromDisplayName);
+
+
+            } else
+                System.out.print("Something wrong");
+        }
+        catch(ParseException e){
+            System.out.println(e);
+        }
+    }
+
     private void displayMatchingUsers() {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Userdetails");
-        query.whereEqualTo("name", palName.getText().toString());
+        String testing = palName.getText().toString();
+        query.whereEqualTo("name", testing);
         query.findInBackground(new FindCallback<ParseObject>() {
             public void done(List<ParseObject> objects, ParseException e) {
                 if (e == null) {
                     if (objects.size() > 0) {
-                        //Toast.makeText(MatchCreateActivity.this, "There is size", Toast.LENGTH_SHORT).show();
-                        //Toast.makeText(MatchCreateActivity.this, objects.get(0).get("username").toString(), Toast.LENGTH_SHORT).show();
                         initiateDialog(objects);
-
                     } else
                         Toast.makeText(MatchCreateActivity.this, "Size is zero", Toast.LENGTH_SHORT).show();
                 } else {
@@ -178,13 +220,13 @@ public class MatchCreateActivity extends AppCompatActivity {
                 MatchCreateActivity.this,
                 android.R.layout.select_dialog_singlechoice);
         for(ParseObject obj: objects){
-            if(obj.get("username").toString().equals(ParseUser.getCurrentUser().toString())){
+            /*if(obj.get("username").toString().equals(ParseUser.getCurrentUser().toString())){
                 System.out.print("The same user as current");
-            }
-            else{
-                System.out.print("Reached here");
+            }*/
+
+                //System.out.print("Reached here");
                 arrayAdapter.add(/*obj.get("name").toString()+" (" +*/obj.get("username").toString()/*+" )"*/);
-            }
+
 
         }
         /*arrayAdapter.add("Hardik");
@@ -207,13 +249,13 @@ public class MatchCreateActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        String userName = arrayAdapter.getItem(which);
+                        ToUserName = arrayAdapter.getItem(which);
                         //getNameFromUserNameFromParse(userName);
-                        if (userName.equals(ParseUser.getCurrentUser().toString())) {
-
+                        if (ToUserName.equals(ParseUser.getCurrentUser().toString())) {
+                            Log.d("Current User Check","Same as current user");
                         }
                         ParseQuery<ParseObject> query = ParseQuery.getQuery("Userdetails");
-                        query.whereEqualTo("username", userName);
+                        query.whereEqualTo("username", ToUserName);
                         query.findInBackground(new FindCallback<ParseObject>() {
                             public void done(List<ParseObject> objects, ParseException e) {
                                 if (e == null) {
@@ -221,6 +263,8 @@ public class MatchCreateActivity extends AppCompatActivity {
                                         String name = objects.get(0).get("name").toString();
 
                                         palName.setText(name);
+                                        ToDisplayName = name;
+                                        System.out.println(ToDisplayName);
 
                                     } else
                                         Toast.makeText(MatchCreateActivity.this, "Size is zero", Toast.LENGTH_SHORT).show();

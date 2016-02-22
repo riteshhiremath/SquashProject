@@ -66,8 +66,8 @@ public class SelectedMatchActivity extends AppCompatActivity {
                 if (e == null) {
                     System.out.println("Object has been found!!");
                     System.out.println(object.get("FromPlayer"));
-                    SMA_FromPlayer.setText(object.get("FromPlayer").toString());
-                    SMA_ToPlayer.setText(object.get("ToPlayer").toString());
+                    SMA_FromPlayer.setText(object.get("FromPlayerToDisp").toString());
+                    SMA_ToPlayer.setText(object.get("ToPlayerToDisp").toString());
                     SMA_Time.setText(object.get("Time").toString());
                     SMA_Location.setText(object.get("Location").toString());
 
@@ -87,6 +87,9 @@ public class SelectedMatchActivity extends AppCompatActivity {
                     if (e == null) {
                         String currentStatus;
                         currentStatus = object.get("Status").toString();
+
+                        //Consider switch case
+
                         if(currentStatus.equals("pending")){
                             object.put("Status", "accepted");
                             object.saveInBackground();

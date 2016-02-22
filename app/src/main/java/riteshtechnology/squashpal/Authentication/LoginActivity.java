@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.parse.LogInCallback;
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
@@ -42,14 +41,6 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Parse.enableLocalDatastore(this);
-        Parse.initialize(this, "Sm2wwAv72dlUrhmSwSJwRsIJ5G8B0GfRTtvQ9uf2", "rJVwfkHcshHIwKk5x2GQSj07Odl6ctKtsBBaqBXx");
-        //ParseInstallation.getCurrentInstallation().saveInBackground();
-
-
-
-
-        Toast.makeText(LoginActivity.this, "Parse is Initialized", Toast.LENGTH_SHORT).show();
         ButterKnife.inject(this);
 
         _loginButton.setOnClickListener(new View.OnClickListener() {
@@ -98,9 +89,11 @@ public class LoginActivity extends AppCompatActivity {
                 if (e == null) {
 
                     Toast.makeText(LoginActivity.this, "Login is successful", Toast.LENGTH_SHORT).show();
+                    //Store the username in installation table for PUSH NOTIFICATION
                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                     installation.put("username", ParseUser.getCurrentUser().getUsername());
                     installation.saveInBackground();
+
                     Intent createMatch = new Intent(getApplicationContext(), MatchDashboardActivity.class);
                     startActivity(createMatch);
 

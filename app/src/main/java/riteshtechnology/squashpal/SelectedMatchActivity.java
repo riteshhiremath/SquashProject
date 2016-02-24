@@ -18,7 +18,7 @@ import com.parse.ParseQuery;
 
 public class SelectedMatchActivity extends AppCompatActivity {
 
-    TextView SMA_ToPlayer,SMA_FromPlayer,SMA_Location,SMA_Time;
+    TextView SMA_ToPlayer, SMA_FromPlayer, SMA_Location, SMA_Time, SMA_Label_Accepted, SMA_Label_Pending;
     Button SMA_Accept;
     String selected_Object_id;
     String selected_match_status;
@@ -35,6 +35,9 @@ public class SelectedMatchActivity extends AppCompatActivity {
         SMA_FromPlayer = (TextView)findViewById(R.id.TV_SMA_FromPlayer);
         SMA_Location = (TextView)findViewById(R.id.TV_SMA_Location);
         SMA_Time = (TextView)findViewById(R.id.TV_SMA_Time);
+
+        SMA_Label_Accepted = (TextView) findViewById(R.id.label_status_accepted);
+        SMA_Label_Pending = (TextView) findViewById(R.id.label_status_pending);
 
         selected_Object_id = getIntent().getStringExtra("ObjectId");
         //Toast.makeText(SelectedMatchActivity.this, selected_Object_id, Toast.LENGTH_SHORT).show();
@@ -70,6 +73,9 @@ public class SelectedMatchActivity extends AppCompatActivity {
                     SMA_ToPlayer.setText(object.get("ToPlayerToDisp").toString());
                     SMA_Time.setText(object.get("Time").toString());
                     SMA_Location.setText(object.get("Location").toString());
+                    if (object.get("Status").toString().equals("Pending")) {
+                        SMA_Label_Pending.setVisibility(View.VISIBLE);
+                    }
 
                 } else {
                     System.out.println("Object has not been found!!");
@@ -93,6 +99,10 @@ public class SelectedMatchActivity extends AppCompatActivity {
                         if(currentStatus.equals("pending")){
                             object.put("Status", "accepted");
                             object.saveInBackground();
+                            SMA_Accept.setText("Accepted");
+                            SMA_Accept.setEnabled(false);
+                            SMA_Label_Pending.setVisibility(View.GONE);
+                            SMA_Label_Accepted.setVisibility(View.VISIBLE);
                             Toast.makeText(SelectedMatchActivity.this, "The match is accepted", Toast.LENGTH_SHORT).show();
                         }
                         else if(currentStatus.equals("accepted")){
